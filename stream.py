@@ -17,8 +17,6 @@ from fuzzywuzzy import fuzz
 from fuzzywuzzy import process
 import tempfile
 
-file    =   'Juli'
-saveas  =   '7. Juli'
 
 st.title('Automate Error Checking (99.01)')
 st.markdown('### Upload file *Zip')
@@ -34,11 +32,15 @@ if uploaded_file is not None:
             with zipfile.ZipFile(uploaded_file, 'r') as zip_ref:
                 zip_ref.extractall(tmpdirname)
 
-            df_9901 = pd.read_excel(f"{tmpdirname}/_raw/9901_{saveas}.xlsx")
-            df_9901x = df_9901.to_csv(f'{tmpdirname}/_olah/9901_{saveas}.csv', index=False)
+            dfs =[]
+            for file in os.listdir(f"{tmpdirname}/_raw/"):
+                if file.endswith("xlsx"):
+                    dfs.append(pd.read_excel(file))
+                    
+                    
             df_prov = pd.read_csv(f'{tmpdirname}/_bahan/database provinsi.csv', encoding='latin1')
             df_prov = df_prov.loc[:,['Kode Cabang','Provinsi Gudang','Kota/Kabupaten']].rename(columns={'Kode Cabang':'Nama Cabang'})
-            df_9901 =   pd.read_csv(f'{tmpdirname}/_olah/9901_{saveas}.csv').fillna('')
+            df_9901 =   pd.concat(dfs,ignore_index=True).fillna('')
 
             # Filter kolom-kolom yang berawalan "Unnamed:"
             kolom_unnamed = df_9901.filter(regex='^Unnamed:').columns
@@ -83,7 +85,7 @@ if uploaded_file is not None:
                                                         'Nama Gudang':'New-Nama Gudang'}).drop(columns=['Count Kode','Kode'])
 
             df_salah_cg = pd.merge(df_salah_cg, df_9901_kode, how='left', on='Nomor #').fillna('')
-            df_salah_cg.to_csv(f'{tmpdirname}/_final/Salah Cabang_Gudang.csv', index=False)
+            #df_salah_cg.to_csv(f'{tmpdirname}/_final/Salah Cabang_Gudang.csv', index=False)
 
             df_9901['Keterangan'] = ''  # Create 'Keterangan' column if not already present
 
@@ -92,7 +94,7 @@ if uploaded_file is not None:
 
             df_9901_FI  =   df_9901[df_9901['Keterangan']       ==      'Free Item']
 
-            df_9901_FI.to_csv(f'{tmpdirname}/_final/Free Item.csv', index=False)
+            #df_9901_FI.to_csv(f'{tmpdirname}/_final/Free Item.csv', index=False)
 
             df_database_barang = pd.read_csv(f'{tmpdirname}/_bahan/database barang.csv').fillna('')
             df_database_barang = df_database_barang.drop_duplicates().reset_index(drop=True)
@@ -128,7 +130,7 @@ if uploaded_file is not None:
             df_salah_b1 = pd.merge(df_9901[df_9901['Kode #'].astype('str').str.startswith(('1','2','4'))], df_database_barang[['Kode #','New-Nama Barang']], on='Kode #')
             df_salah_b1 = df_salah_b1[df_salah_b1.apply(lambda row:row['Nama Barang']!=row['New-Nama Barang'],axis=1)]
 
-            df_salah_b1.to_csv(f'{tmpdirname}/_final/Salah Nama Barang.csv', index=False)
+            #df_salah_b1.to_csv(f'{tmpdirname}/_final/Salah Nama Barang.csv', index=False)
 
             df_satuan = df_9901.drop(columns=['Kode Cabang'])
             df_satuan = df_satuan[df_satuan['Keterangan'] != "Free Item"]
