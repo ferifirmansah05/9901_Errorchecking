@@ -33,13 +33,13 @@ if uploaded_file is not None:
                 zip_ref.extractall(tmpdirname)
 
             dfs =[]
-            for file in os.listdir(f"{tmpdirname}/_raw/"):
+            for file in uploaded_file:
                 if file.endswith("xlsx"):
-                    dfs.append(pd.read_excel(f"{tmpdirname}/_raw/"+file))
+                    dfs.append(pd.read_excel(file)
                     
                     
-            df_prov = pd.read_csv(f'{tmpdirname}/_bahan/database provinsi.csv', encoding='latin1')
-            df_prov = df_prov.loc[:,['Kode Cabang','Provinsi Gudang','Kota/Kabupaten']].rename(columns={'Kode Cabang':'Nama Cabang'})
+            #df_prov = pd.read_csv(f'{tmpdirname}/_bahan/database provinsi.csv', encoding='latin1')
+            #df_prov = df_prov.loc[:,['Kode Cabang','Provinsi Gudang','Kota/Kabupaten']].rename(columns={'Kode Cabang':'Nama Cabang'})
             df_9901 =   pd.concat(dfs,ignore_index=True).fillna('')
 
             # Filter kolom-kolom yang berawalan "Unnamed:"
@@ -96,7 +96,31 @@ if uploaded_file is not None:
 
             #df_9901_FI.to_csv(f'{tmpdirname}/_final/Free Item.csv', index=False)
 
-            df_database_barang = pd.read_csv(f'{tmpdirname}/_bahan/database barang.csv').fillna('')
+            def download_file_from_github(url, save_path):
+                response = requests.get(url)
+                if response.status_code == 200:
+                    with open(save_path, 'wb') as file:
+                        file.write(response.content)
+                    print(f"File downloaded successfully and saved to {save_path}")
+                else:
+                    print(f"Failed to download file. Status code: {response.status_code}")
+            url = 'https://raw.githubusercontent.com/ferifirmansah05/9901_Errorchecking/main/database barang.csv'
+
+            # Path untuk menyimpan file yang diunduh
+            save_path = 'database barang.csv'
+            
+            # Unduh file dari GitHub
+            download_file_from_github(url, save_path)
+            
+            # Muat model dari file yang diunduh
+            if os.path.exists(save_path):
+                df_prov = load_excel(save_path)
+                print("Model loaded successfully")
+            else:
+                print("Model file does not exist")
+                
+            df_database_barang = pd.read_csv(f'database barang.csv').fillna('')
+            
             df_database_barang = df_database_barang.drop_duplicates().reset_index(drop=True)
 
             df_9901_cek                   = df_9901.loc[:,['Kode #','Nama Barang']]
