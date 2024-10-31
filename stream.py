@@ -108,12 +108,6 @@ if uploaded_file is not None:
             # Unduh file dari GitHub
             download_file_from_github(url, save_path)
             
-            # Muat model dari file yang diunduh
-            if os.path.exists(save_path):
-                df_prov = load_excel(save_path)
-                print("Model loaded successfully")
-            else:
-                print("Model file does not exist")
                 
             df_database_barang = pd.read_csv(f'database barang.csv').fillna('')
             
