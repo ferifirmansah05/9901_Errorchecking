@@ -35,7 +35,7 @@ if uploaded_file is not None:
             dfs =[]
             for file in uploaded_file:
                 if file.endswith("xlsx"):
-                    dfs.append(pd.read_excel(file)
+                    dfs.append(pd.read_excel(file))
                     
                     
             #df_prov = pd.read_csv(f'{tmpdirname}/_bahan/database provinsi.csv', encoding='latin1')
