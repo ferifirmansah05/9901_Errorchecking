@@ -28,9 +28,6 @@ if uploaded_file is not None:
 
     if st.button('Process'):
         with tempfile.TemporaryDirectory() as tmpdirname:
-            # Ekstrak file ZIP ke direktori sementara
-            with zipfile.ZipFile(uploaded_file, 'r') as zip_ref:
-                zip_ref.extractall(tmpdirname)
 
             dfs =[]
             for file in uploaded_file:
