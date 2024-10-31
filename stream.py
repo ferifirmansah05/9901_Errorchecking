@@ -31,7 +31,6 @@ if uploaded_file is not None:
 
             dfs =[]
             for file in uploaded_file:
-                if file.endswith("xlsx"):
                     dfs.append(pd.read_excel(file))
                     
                     
