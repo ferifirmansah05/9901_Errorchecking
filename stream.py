@@ -20,7 +20,7 @@ import tempfile
 
 st.title('Automate Error Checking (99.01)')
 st.markdown('### Upload file *Zip')
-uploaded_file = st.file_uploader("Pilih file ZIP", type="zip")
+uploaded_file = st.file_uploader("Pilih file",type="xlsx", accept_multiple_files=True)
 
 if uploaded_file is not None:
     st.write('File berhasil diupload')
